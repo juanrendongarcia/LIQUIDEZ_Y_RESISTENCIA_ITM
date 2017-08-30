@@ -1,4 +1,5 @@
 
+
 setwd("~/LIQUIDEZ_Y_RESISTENCIA_ITM/cia de financiamiento 3")
 
 library(readxl)
@@ -61,5 +62,8 @@ EXTRAER_CUENTAS_PUC=function(VECTOR_CUENTAS){
 }
 
 
+VECTOR_CUENTAS_2=c("100000.000000","200000.000000","300000.000000")
+
+View(EXTRAER_CUENTAS_PUC(VECTOR_CUENTAS_2))
 
 

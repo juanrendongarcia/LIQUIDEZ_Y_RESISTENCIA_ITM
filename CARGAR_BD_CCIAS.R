@@ -1,3 +1,5 @@
+CARGAR_BD_CCIAS=function(BD_01_14,BD_15_16){
+
 setwd("~/LIQUIDEZ_Y_RESISTENCIA_ITM")
 
 library(readxl)
@@ -19,6 +21,8 @@ for (x in 1:24) {
   lista_15_16[[x]] <- read_excel(temp[x], sheet=1, col_names = FALSE)
 }
 
-setwd("~/LIQUIDEZ_Y_RESISTENCIA_ITM")
+Datos_CIAS=list(Datos_2001_2014=lista_01_14,Datos_2015_2016=lista_15_16)
+return(Datos_CIAS)
+}
 
-
+Datos_CCIAS=CARGAR_BD_CCIAS()

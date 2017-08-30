@@ -1,0 +1,58 @@
+---
+title: "Modelos VAR"
+author: "Juan F"
+date: "29 de agosto de 2017"
+output: html_document
+---
+
+
+# Modelo de Vectores Autorregresivos (VAR: Vector autoregressive models)
+
+## Definición
+
+Dado un conjunto de K variables endogenas  $(y_{1t},...,y_{kt},...,y_{Kt})$ for k = 1,...K. The VAR(p)-process is then defined as:
+
+ $y_t = (A_1y_{t-1}+...+A_py_{t-p},...,yKt)$ for k = 1,...K. The VAR(p)-process is then defined as:
+
+
+```{r}
+library(vars)
+
+data(Canada)
+Canada=as.data.frame(Canada)
+
+layout(matrix(1:4, nrow = 2, ncol = 2))
+
+plot.ts(Canada$e, main = "Employment", ylab = "", xlab = "")
+plot.ts(Canada$prod, main = "Productivity", ylab = "", xlab = "")
+plot.ts(Canada$rw, main = "Real Wage", ylab = "", xlab = "")
+plot.ts(Canada$U, main = "Unemployment Rate", ylab = "", xlab = "")
+
+
+
+```
+
+
+
+Para seleccionar el Rezago del modelo se utiliza la siguiente función
+
+```{r}
+VARselect(Canada, lag.max = 5, type = "const")
+
+```
+
+
+```{r}
+var.2c <- VAR(Canada, p = 2, type = "const")
+summary(var.2c)
+plot(var.2c)
+
+```
+
+
+Raices  del modelo
+```{r}
+roots(var.2c)
+```
+
+Las dos primeras están cercanas a 1. 

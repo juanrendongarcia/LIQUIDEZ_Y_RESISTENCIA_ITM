@@ -1,28 +1,14 @@
+# Esta función  conforma la serie de tiempo de determinada cuentas PUC. Se debe especificar un vector con las cuentas del PUC que se quieren extrer y la base de datos 
 
+#VECTOR_CUENTAS=c("100000.000000","110000.000000","110500.000000")
+#BAse de datos Datos_CCIAS[[2]]
 
-setwd("~/LIQUIDEZ_Y_RESISTENCIA_ITM/cia de financiamiento 3")
-
-library(readxl)
-temp = list.files(pattern="*.xls")
-
-lista_A <- list()
-
-for (x in 1:24) {
-  lista_A[[x]] <- read_excel(temp[x], sheet=1, col_names = FALSE)
-}
-
-
-
-
-
-VECTOR_CUENTAS=c("100000.000000","110000.000000","110500.000000")
-
-EXTRAER_CUENTAS_PUC=function(VECTOR_CUENTAS){
+EXTRAER_CUENTAS_PUC=function(VECTOR_CUENTAS,lista_hojas){
   
   
   
   i=1
-  D=as.data.frame(lista_A[i])
+  D=as.data.frame(lista_hojas[i])
   Q=which(D[,2] == "ACTIVO")-1 #obtener el indice de la fila donde esta ACTIVO
   D=D[Q:length(D[,1]),]
   colnames(D)<-D[1,]
@@ -37,7 +23,7 @@ EXTRAER_CUENTAS_PUC=function(VECTOR_CUENTAS){
   
   
   for (i in 2:24){
-    D=as.data.frame(lista_A[i])
+    D=as.data.frame(lista_hojas[i])
     Q=which(D[,2] == "ACTIVO")-1 #obtener el indice de la fila donde esta ACTIVO
     D=D[Q:length(D[,1]),]
     colnames(D)<-D[1,]
@@ -62,8 +48,6 @@ EXTRAER_CUENTAS_PUC=function(VECTOR_CUENTAS){
 }
 
 
-VECTOR_CUENTAS_2=c("100000.000000","200000.000000","300000.000000")
-
-View(EXTRAER_CUENTAS_PUC(VECTOR_CUENTAS_2))
 
 
+View(EXTRAER_CUENTAS_PUC(VECTOR_CUENTAS,Datos_CCIAS[[2]]))

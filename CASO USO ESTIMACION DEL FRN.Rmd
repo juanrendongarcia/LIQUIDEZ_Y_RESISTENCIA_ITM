@@ -1,5 +1,5 @@
 ---
-title: "ESTIMACI??N DEL FACTOR DE RETIRO NETO"
+title: "ESTIMACION DEL FACTOR DE RETIRO NETO"
 author: "Juan F"
 date: "12 de septiembre de 2017"
 output: 
@@ -12,13 +12,13 @@ output:
 
 # Cargar el ORACULO
 
-Los nombres de los objetos contenidos en la lista llamada  **Or??culo** son las siguientes bases de datos, presentadas en el orden del ??ndice de la lista:
+Los nombres de los objetos contenidos en la lista llamada  **Oráculo** son las siguientes bases de datos, presentadas en el orden del índice de la lista:
 
 
-* "PROCES_lista_01_14_CCIAS" 
-* "PROCES_lista_15_16_CCIAS" 
 * "PROCES_lista_01_14_BANCOS"
 * "PROCES_lista_15_16_BANCOS"
+* "PROCES_lista_01_14_CCIAS" 
+* "PROCES_lista_15_16_CCIAS" 
 
 ```{r}
 
@@ -27,7 +27,8 @@ load("BASE_DATOS_ENT_FINANCIERAS.RData")
 ```
 
 
-# Extraer objetos del Or??culo.
+# Extraer objetos del Oráculo.
+
 
 
 ```{r}
@@ -41,17 +42,35 @@ PROCES_lista_15_16_CCIAS=ORACULO$PROCES_lista_15_16_CCIAS
 
 
 
-# Funci??n para conformaci??n de series de tiempo de cuentas PUC para un conjunto de entidades agregadas.
+# Función para conformación de series de tiempo de cuentas PUC para un conjunto de entidades agregadas.
 
-Se crea 
+## Argumentos de la función
+
+* VECTOR_CUENTAS: Es un vector que contiene los numeros de cuentas PUC de las cuentas a las cuales se desea conformar su serie de tiempo. Por ejemplo:
+
+**VECTOR_CUENTAS=c("100000","110000","110500")**
+
+* LISTA_HOJAS: Es la base de datos que se encuentra en una lista de *R*. Cada posición de la lista comtiene el PUC de un mes de un conjunto de entidades financieras. Por ejemplo:
+
+**LISTA_HOJAS=PROCES_lista_15_16_BANCOS # BORRAR**
+
+* FECHA_INICIAL_SERIE: Corresponde al mes mas antiguo de la base de datos. Por ejemplo:
+
+FECHA_INICIAL_SERIE="2015/1/1"
+
+* FECHA_FINAL_SERIE: Corresponde al mes mas actual de la base de datos.  Por ejemplo:
+
+FECHA_FINAL_SERIE="2016/12/1"
+
 
 ```{r}
 
-LISTA_HOJAS=PROCES_lista_01_14_BANCOS # BORRAR
-VECTOR_CUENTAS=c("100000","110000","110500") # BORRAR
-FECHA_INICIAL_SERIE="2001/1/1" #borrar
-FECHA_FINAL_SERIE="2014/12/1"#borrar
 
+# LISTA_HOJAS=PROCES_lista_15_16_BANCOS # BORRAR
+# VECTOR_CUENTAS=c("100000","110000","110500") # BORRAR
+#FECHA_INICIAL_SERIE="2015/1/1" #borrar
+#FECHA_FINAL_SERIE="2016/12/1"#borrar
+#VECTOR_CUENTAS=VECTOR_CUENTAS_FRN_15_16 
 
 AGREGAR_T_SERIES_PUC=function(VECTOR_CUENTAS,
                                LISTA_HOJAS,
@@ -89,12 +108,19 @@ return(SERIES_DE_TIEMPO_PUC)
 
 # Saldos Bancos para periodo 2001 - 2014
 
+
+Según el anexo 1 del capítulo VI de la CBCF, el valor de los depósitos y exigibilidades a la vista, se calcula como la la diferencia entre el saldo de la cuenta PUC 21- Depósitos y Exigibilidades, y el saldo total de CDTs, CDATs y Cuentas de Ahorro Especial (cuentas PUC 2115, 212010, 2127 y 2130).
+
 * 210000.000000 DEPOSITOS Y EXIGIBILIDADES  
-* 211500.000000 CERTIFICADOS DE DEPOSITO A TERMINO   CAMBIA EN 2015 A 2107
-* 212010.000000 CON CERTIFICADO A TERMINO   CAMBIA EN 2015  210815
+* 211500.000000 CERTIFICADOS DE DEPOSITO A TERMINO.   CAMBIA EN 2015 A 2107
+* 212010.000000 DEPOSITOS DE AHORRO CON CERTIFICADO A TERMINO.   CAMBIA EN 2015  210815
 * 212700.000000 CUENTAS DE AHORRO ESPECIAL   CAMBIA EN 2015 2109
 * 213000.000000 CERTIFICADOS DE AHORRO DE VALOR REAL CAMBIA A 2110  
 
+
+Estas cuentas están bajo la numeración PUC COLGAAP, para los registros del PUC de enero de 2015 en adelante, se deben mapear las cuentas mencionadas.
+
+El mapeo es el siguiente:
 
 ```{r}
 
@@ -110,262 +136,75 @@ CUENTAS_FRN_BANCOS_01_14=AGREGAR_T_SERIES_PUC(VECTOR_CUENTAS_FRN,
                                "2001/1/1",
                                "2014/12/1")
 
+SERIE_SALDOS_NO_CONTRACT_BANCOS_01_14=CUENTAS_FRN_BANCOS_01_14[,1]-CUENTAS_FRN_BANCOS_01_14[,2]-CUENTAS_FRN_BANCOS_01_14[,3]-CUENTAS_FRN_BANCOS_01_14[,4]-CUENTAS_FRN_BANCOS_01_14[,5]
+
+FECHAS_01_14=seq(as.Date(FECHA_INICIAL_SERIE), as.Date(FECHA_FINAL_SERIE), "month")
+
+plot(FECHAS_01_14,SERIE_SALDOS_NO_CONTRACT_BANCOS_01_14,type = "l",main = "Saldos no Contractuales Bancos", xlab = "periodo")
 
 ```
 
 
+# Saldos no Contractuales bancos 2015-2016
+
+El mapeo de COLGAAP a NIIF es el siguiente:
+
+COLGAAP	
+* 210000	DEPOSITOS Y EXIGIBILIDADES.  
+* 211500	CERTIFICADOS DE DEPOSITO A TERMINO.  
+* 212010	DEPOSITOS DE AHORRO CON CERTIFICADO A TERMINO.  
+* 212700	CUENTAS DE AHORRO ESPECIAL.  
+* 213000	CERTIFICADOS DE AHORRO DE VALOR REAL.  
+	
+	Cambian a:
+	
+	NIIF
+* 210000	INSTRUMENTOS FINANCIEROS A COSTO AMORTIZADO
+* 210700	CERTIFICADOS DE DEPÓSITO A TERMINO
+* 210815	DEPOSITOS DE AHORRO CON CERTIFICADO A TERMINO
+* 210900	CUENTAS DE AHORRO ESPECIAL
+* 211000	CERTIFICADOS DE AHORRO DE VALOR REAL
 
-
-
-
-
-
-# Conformaci??n de series de tiempo de cuentas PUC por agente.
-
-## Funci??n para conformar series de tiempo de cuentas PUC
-
-Se crea la funci??n **EXTRAER_CUENTAS_PUC**, la cual requiere la especificaci??n de 3 argumentos:
-
-* PUC_VECTOR_CUENTAS  
-
-Se deben  ingresar el n??mero de cuentas  PUC (a 6 digitos) que se quieren extraer. Por ejemplo: 
-
-**PUC_VECTOR_CUENTAS=c(100000,110000,110500)**
-
-* LISTA_HOJAS
-
-Se debe de suministrar una lista que contenga en cada una de sus posiciones un data frame con el PUC mensual. Por ejemplo:  
-
-
-LISTA_HOJAS=PROCES_lista_15_16_CCIAS 
-
-* NOMBRE_ENTIDAD.
-
-Se suministra el nombre (o parte del nombre) de la entidad entre comillas para la cual se hace la conformaci??n de las series de las cuentas PUC.
-
-Por ejemplo:
-
-NOMBRE_ENTIDAD="LEASING.CORFICOLOMBIANA"
-
-* FECHA_INICIAL_SERIE
-Se suministra la fecha inicial de la serie de tiempo a conformar entre comillas en formato AAAA/MM/DD. Por ejejmplo:  
-
-* FECHA_INICIAL_SERIE="2015/1/1"
-
-* FECHA_FINAL_SERIE
-
-Se suministra la fecha final de la serie de tiempo a conformar entre comillas en formato AAAA/MM/DD. Por ejejmplo:.  
-
-FECHA_FINAL_SERIE="2016/12/1" 
-
-
-
-
-```{r funcion seires puc}
-
-# Esta funci??n  conforma la serie de tiempo de determinada cuentas PUC. 
-# Argumentos: * VECTOR_CUENTAS: vector con las cuentas del PUC que se quieren extrer 
-#             * lista_hojas: Una lista que contiene en cada posici??n una hoja de excel 
-
-# Por ejemplo:
-
-  
-
-EXTRAER_SERIE_CUENTAS_PUC=function(VECTOR_CUENTAS,LISTA_HOJAS,
-                             NOMBRE_ENTIDAD,
-                             FECHA_INICIAL_SERIE,
-                             FECHA_FINAL_SERIE
-                              )
-                             {
-  
-
-PUC_MES=(as.data.frame(LISTA_HOJAS[1])) #Se extrae cada objeto de la lista como un data frame. 
-  
-SERIES_MENSUALES_PUC_ENTIDAD<-subset(PUC_MES, NUMERO_PUC %in% VECTOR_CUENTAS, select = c(NUMERO_PUC,CUENTA)) # Se conforma un data frame en donde en la primera columna estan las cuentas seleccionadas y en la segunda columna est?? el nombre correspondiente a la cuenta 
-  
-  
-  
-  for (i in 1:length(LISTA_HOJAS)){
-    
-    
-    D=(as.data.frame(LISTA_HOJAS[i]))
-    
-    VALORES_PUC_ENTIDAD<-subset(D, NUMERO_PUC %in% VECTOR_CUENTAS, select = c(grep(NOMBRE_ENTIDAD,colnames(D))))
-  
-      
-      
-SERIES_MENSUALES_PUC_ENTIDAD=cbind(SERIES_MENSUALES_PUC_ENTIDAD,VALORES_PUC_ENTIDAD)
-    
-  }
-  
-  row.names(SERIES_MENSUALES_PUC_ENTIDAD)=(SERIES_MENSUALES_PUC_ENTIDAD[,"CUENTA"]) # Se nombran las columnas con el nombre de las cuentas
-  SERIES_MENSUALES_PUC_ENTIDAD=SERIES_MENSUALES_PUC_ENTIDAD[,-2]
-  
-
-#colnames(SERIES_MENSUALES_PUC_ENTIDAD)[2:length(SERIES_MENSUALES_PUC_ENTIDAD)]=as.character(seq(as.Date(FECHA_INICIAL_SERIE), as.Date(FECHA_FINAL_SERIE), "month"))
-  
-  return(SERIES_MENSUALES_PUC_ENTIDAD)
-  
-}
-
-
-```
-
-
-# Extracci??n de series de saldos de cuentas de ahorros.
-
-Se hace la extracci??n de las series del PUC con los siguientes argumentos:
-
-VECTOR_CUENTAS=c(100000,110000,110500)
-LISTA_HOJAS=PROCES_lista_15_16_CCIAS  
-NOMBRE_ENTIDAD="LEASING.CORFICOLOMBIANA"
-FECHA_INICIAL_SERIE="2015/1/1"
-FECHA_FINAL_SERIE="2016/12/1"
-
-
-```{r}
-
-
-
-VECTOR_CUENTAS=c(210000, 211500, 212010,212700,213000)
-
-LISTA_HOJAS=PROCES_lista_15_16_CCIAS  
-NOMBRE_ENTIDAD="COLTEFINANCIERA"
-FECHA_INICIAL_SERIE="2015/1/1"
-FECHA_FINAL_SERIE="2016/12/1"
-
-COLTEFINANCIERA=EXTRAER_SERIE_CUENTAS_PUC(VECTOR_CUENTAS,LISTA_HOJAS,
-                             NOMBRE_ENTIDAD,
-                             FECHA_INICIAL_SERIE,
-                             FECHA_FINAL_SERIE
-                              )
-
-
-
-```
-
-
-# Graficas de Cuentas PUC
-
-Se implementa una finci??n que grafica las series de las cuentas PUC que se extragieron. Los argumentos son los siguientes:
-
-* MATRIZ_SERIES_CUENTAS_PUC.  
-
-* FECHA_FINAL_SERIE.  
-
-* FECHA_INICIAL_SERIE.  
-
-  
-
-```{r}
-
-
-graficar_series=function(MATRIZ_SERIES_CUENTAS_PUC,
-                         FECHA_FINAL_SERIE,
-                         FECHA_INICIAL_SERIE){
-  
-Fechas=seq(as.Date(FECHA_INICIAL_SERIE), as.Date(FECHA_FINAL_SERIE), "month")
-               
-
-for (j in 1:dim(MATRIZ_SERIES_CUENTAS_PUC)[1])
-  {
-
-  
-}
-return(plot(Fechas,t(MATRIZ_SERIES_CUENTAS_PUC[j,2:length(MATRIZ_SERIES_CUENTAS_PUC)]),type = "l", main=row.names(MATRIZ_SERIES_CUENTAS_PUC)[j]))
-
-}
-
-```
-
-
-# Ejemplo funci??n graficar_series
-
-Se utilizan los siguientes argumentos:  
-
-
-MATRIZ_SERIES_CUENTAS_PUC=CORFICOLOMBIANA  
-
-FECHA_INICIAL_SERIE="2015/1/1"  
-
-FECHA_FINAL_SERIE="2016/12/1"  
-
-
-
-```{r}
-
-MATRIZ_SERIES_CUENTAS_PUC=CORFICOLOMBIANA
-FECHA_INICIAL_SERIE="2015/1/1"
-FECHA_FINAL_SERIE="2016/12/1"
-
-par(mfrow=c(dim(MATRIZ_SERIES_CUENTAS_PUC)[1],1))
-
-graficar_series(MATRIZ_SERIES_CUENTAS_PUC,FECHA_FINAL_SERIE,FECHA_INICIAL_SERIE)
-
-```
-
-
-# Extracci??n de las cuentas PUC para un conjunto de entidades.
-
-Se crea la lista **"LISTA_PUC_TODAS_ENTIDADES."**  En cada posici??n de esta lista se encuentran las series de un conjunto de  cuentas PUC seleccionadas por cada entidad.
-Se extraen las series de tiempo del PUC de las entidades que est??n en el registro PUC mas actual (PUC mas actual de la serie)
-
-A diferencia de la funci??n que extrae las cuentas de una sola entidad, en esta se omite el nombre de la entidad, dado que se toman todas las entidades del PUC mas actual.
 
 
 
 
 ```{r}
 
+LISTA_HOJAS=PROCES_lista_15_16_BANCOS # BORRAR
+#VECTOR_CUENTAS=c("100000","110000","110500") # BORRAR
+FECHA_INICIAL_SERIE="2015/1/1" #borrar
+FECHA_FINAL_SERIE="2016/12/1"#borrar
+VECTOR_CUENTAS_FRN_15_16=c("210000","210700","210815","210900","211000") 
+VECTOR_CUENTAS=VECTOR_CUENTAS_FRN_15_16
+
+CUENTAS_FRN_BANCOS_15_16=AGREGAR_T_SERIES_PUC(VECTOR_CUENTAS,
+                               LISTA_HOJAS,
+                               FECHA_INICIAL_SERIE,
+                               FECHA_FINAL_SERIE)
 
 
-CONFORMAR_PUC_VARIAS_ENTIDADES=function(VECTOR_CUENTAS,LISTA_HOJAS,FECHA_INICIAL_SERIE,FECHA_FINAL_SERIE) {
-  
-LISTA_PUC_TODAS_ENTIDADES=list()
-
-PUC_FIN_SERIE=as.data.frame(LISTA_HOJAS[length(LISTA_HOJAS)]) 
+SERIE_SALDOS_NO_CONTRACT_BANCOS_15_16=CUENTAS_FRN_BANCOS_15_16[,1]-CUENTAS_FRN_BANCOS_15_16[,2]-CUENTAS_FRN_BANCOS_15_16[,3]-CUENTAS_FRN_BANCOS_15_16[,4]-CUENTAS_FRN_BANCOS_15_16[,5]
 
 
-for (i in 3:length(PUC_FIN_SERIE)){
-LISTA_PUC_TODAS_ENTIDADES[[i-2]]=EXTRAER_SERIE_CUENTAS_PUC(VECTOR_CUENTAS,LISTA_HOJAS,
-                             colnames(PUC_FIN_SERIE)[i],
-                             FECHA_INICIAL_SERIE,
-                             FECHA_FINAL_SERIE
-                              )
-                              }
+plot(SERIE_SALDOS_NO_CONTRACT_BANCOS_15_16,type = "l",main = "Saldos no Contractuales Bancos")
 
-return(LISTA_PUC_TODAS_ENTIDADES)
-
-}
 ```
 
 
-## Ejemplo de uso de la funci??n de Extracci??n de las cuentas PUC para un conjunto de entidades.
+
+# Unir saldos 2001 - 2014 con saldos 2015-2016.
+
+
 
 ```{r}
 
-VECTOR_CUENTAS=c(100000,110000,110500)
-LISTA_HOJAS=PROCES_lista_15_16_CCIAS  
-FECHA_INICIAL_SERIE="2015/1/1"
-FECHA_FINAL_SERIE="2016/12/1"
+VALOR_DEPOSITOS_VISTA=c(SERIE_SALDOS_NO_CONTRACT_BANCOS_01_14,SERIE_SALDOS_NO_CONTRACT_BANCOS_15_16)
+
+plot(VALOR_DEPOSITOS_VISTA,type="l")
 
 
-PUC_CIAS=CONFORMAR_PUC_VARIAS_ENTIDADES(VECTOR_CUENTAS,LISTA_HOJAS,FECHA_INICIAL_SERIE,FECHA_FINAL_SERIE) 
-#1
-
-
-getwd()
 ```
 
 
-
-# FRN 2015_2016
-
-
-
-* 210000.000000 DEPOSITOS Y EXIGIBILIDADES  
-* 211500.000000 CERTIFICADOS DE DEPOSITO A TERMINO   CAMBIA EN 2015 A 2107
-* 212010.000000 CON CERTIFICADO A TERMINO   CAMBIA EN 2015  210815
-* 212700.000000 CUENTAS DE AHORRO ESPECIAL   CAMBIA EN 2015 2109
-* 213000.000000 CERTIFICADOS DE AHORRO DE VALOR REAL CAMBIA A 2110  
 

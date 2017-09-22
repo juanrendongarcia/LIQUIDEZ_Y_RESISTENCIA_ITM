@@ -1,0 +1,330 @@
+---
+title: "ESTIMACION DEL FACTOR DE RETIRO NETO"
+author: "Juan F"
+date: "12 de septiembre de 2017"
+output: 
+  html_document: 
+    number_sections: yes
+    toc: yes
+---
+
+
+
+# Cargar base de datos de entidades financieras reguladas por la Superfinanciera de Colombia.
+
+Esta se encuentra almacenada en un archivo RData llamado *"BASE_DATOS_ENT_FINANCIERAS.RData"* La cual contiene una lista de R llamada *"BD_ENTIDADES_FINANCIERAS_PROCESADA"*
+
+Los nombres de los objetos contenidos en dicha lista  son las siguientes bases de datos, presentadas en el orden del índice de la lista:
+
+
+* "PROCES_lista_01_14_BANCOS"
+* "PROCES_lista_15_16_BANCOS"
+* "PROCES_lista_01_14_CCIAS" 
+* "PROCES_lista_15_16_CCIAS" 
+
+```{r}
+
+load("BASE_DATOS_ENT_FINANCIERAS.RData")
+
+```
+
+
+# Extraer objetos de *"BD_ENTIDADES_FINANCIERAS_PROCESADA"*
+
+
+
+
+```{r}
+
+PROCES_lista_01_14_BANCOS=BD_ENTIDADES_FINANCIERAS_PROCESADA$PROCES_lista_01_14_BANCOS
+PROCES_lista_15_16_BANCOS=BD_ENTIDADES_FINANCIERAS_PROCESADA$PROCES_lista_15_16_BANCOS
+PROCES_lista_01_14_CCIAS=BD_ENTIDADES_FINANCIERAS_PROCESADA$PROCES_lista_01_14_CCIAS
+PROCES_lista_15_16_CCIAS=BD_ENTIDADES_FINANCIERAS_PROCESADA$PROCES_lista_15_16_CCIAS
+
+```
+
+
+
+# Función para conformación de series de tiempo de cuentas PUC para un conjunto de entidades agregadas.
+
+## Argumentos de la función
+
+* VECTOR_CUENTAS: Es un vector que contiene los numeros de cuentas PUC de las cuentas a las cuales se desea conformar su serie de tiempo. Por ejemplo:
+
+**VECTOR_CUENTAS=c("100000","110000","110500")**
+
+* LISTA_HOJAS: Es la base de datos que se encuentra en una lista de *R*. Cada posición de la lista comtiene el PUC de un mes de un conjunto de entidades financieras. Por ejemplo:
+
+**LISTA_HOJAS=PROCES_lista_15_16_BANCOS**
+
+* FECHA_INICIAL_SERIE: Corresponde al mes mas antiguo de la base de datos. Por ejemplo:
+
+FECHA_INICIAL_SERIE="2015/1/1"
+
+* FECHA_FINAL_SERIE: Corresponde al mes mas actual de la base de datos.  Por ejemplo:
+
+FECHA_FINAL_SERIE="2016/12/1"
+
+
+```{r}
+
+
+# LISTA_HOJAS=PROCES_lista_15_16_BANCOS # BORRAR
+# VECTOR_CUENTAS=c("100000","110000","110500") # BORRAR
+#FECHA_INICIAL_SERIE="2015/1/1" #borrar
+#FECHA_FINAL_SERIE="2016/12/1"#borrar
+#VECTOR_CUENTAS=VECTOR_CUENTAS_FRN_15_16 
+
+AGREGAR_T_SERIES_PUC=function(VECTOR_CUENTAS,
+                               LISTA_HOJAS,
+                               FECHA_INICIAL_SERIE,
+                               FECHA_FINAL_SERIE){
+
+SERIES_DE_TIEMPO_PUC=matrix(0,length(LISTA_HOJAS),length(VECTOR_CUENTAS))  
+
+colnames(SERIES_DE_TIEMPO_PUC)=(VECTOR_CUENTAS)
+
+
+for(j in 1:length(VECTOR_CUENTAS)){
+for (i in 1:length(LISTA_HOJAS)){
+   PUC_MES=(as.data.frame(LISTA_HOJAS[i])) #Se extrae cada objeto de la lista como un data frame. 
+  
+PUC_MES=PUC_MES[,-length(PUC_MES)]
+
+PUC_MES_TOTAL=rowSums(PUC_MES[,2:length(PUC_MES)])
+
+#View(as.data.frame( PUC_MES_TOTAL))
+
+SERIES_DE_TIEMPO_PUC[i,VECTOR_CUENTAS[j]]=PUC_MES_TOTAL[VECTOR_CUENTAS[j]]
+      
+                            }
+                          }
+
+rownames(SERIES_DE_TIEMPO_PUC)=as.character(seq(as.Date(FECHA_INICIAL_SERIE), as.Date(FECHA_FINAL_SERIE), "month"))
+
+return(SERIES_DE_TIEMPO_PUC)
+                             }
+
+```
+
+
+
+# 
+
+Saldos Bancos para periodo 2001 - 2014
+
+
+Según el anexo 1 del capítulo VI de la CBCF, el valor de los depósitos y exigibilidades a la vista, se calcula como la la diferencia entre el saldo de la cuenta PUC 21- Depósitos y Exigibilidades, y el saldo total de CDTs, CDATs y Cuentas de Ahorro Especial (cuentas PUC 2115, 212010, 2127 y 2130).
+
+* 210000.000000 DEPOSITOS Y EXIGIBILIDADES  
+* 211500.000000 CERTIFICADOS DE DEPOSITO A TERMINO.   CAMBIA EN 2015 A 2107
+* 212010.000000 DEPOSITOS DE AHORRO CON CERTIFICADO A TERMINO.   CAMBIA EN 2015  210815
+* 212700.000000 CUENTAS DE AHORRO ESPECIAL   CAMBIA EN 2015 2109
+* 213000.000000 CERTIFICADOS DE AHORRO DE VALOR REAL CAMBIA A 2110  
+
+
+Estas cuentas están bajo la numeración PUC COLGAAP, para los registros del PUC de enero de 2015 en adelante, se deben mapear las cuentas mencionadas.
+
+El mapeo es el siguiente:
+
+```{r}
+
+#LISTA_HOJAS=PROCES_lista_01_14_BANCOS # BORRAR
+
+VECTOR_CUENTAS_FRN=c("210000","211500","212010","212700","213000") # BORRAR
+FECHA_INICIAL_SERIE="2001/1/1" #borrar
+FECHA_FINAL_SERIE="2014/12/1"#borrar
+
+
+CUENTAS_FRN_BANCOS_01_14=AGREGAR_T_SERIES_PUC(VECTOR_CUENTAS_FRN,
+                               PROCES_lista_01_14_BANCOS,
+                               "2001/1/1",
+                               "2014/12/1")
+
+SERIE_SALDOS_NO_CONTRACT_BANCOS_01_14=CUENTAS_FRN_BANCOS_01_14[,"210000"]-CUENTAS_FRN_BANCOS_01_14[,"211500"]-CUENTAS_FRN_BANCOS_01_14[,"212010"]-CUENTAS_FRN_BANCOS_01_14[,"212700"]-CUENTAS_FRN_BANCOS_01_14[,"213000"]
+
+FECHAS_01_14=seq(as.Date(FECHA_INICIAL_SERIE), as.Date(FECHA_FINAL_SERIE), "month")
+
+plot(FECHAS_01_14,SERIE_SALDOS_NO_CONTRACT_BANCOS_01_14,type = "l",main = "Saldos no Contractuales Bancos", xlab = "periodo")
+
+```
+
+
+# Saldos no Contractuales bancos 2015-2016
+
+El mapeo de COLGAAP a NIIF es el siguiente:
+
+COLGAAP	
+* 210000	DEPOSITOS Y EXIGIBILIDADES.  
+* 211500	CERTIFICADOS DE DEPOSITO A TERMINO.  
+* 212010	DEPOSITOS DE AHORRO CON CERTIFICADO A TERMINO.  
+* 212700	CUENTAS DE AHORRO ESPECIAL.  
+* 213000	CERTIFICADOS DE AHORRO DE VALOR REAL.  
+	
+	Cambian a:
+	
+	NIIF
+* 210000	INSTRUMENTOS FINANCIEROS A COSTO AMORTIZADO
+* 210700	CERTIFICADOS DE DEPÓSITO A TERMINO
+* 210815	DEPOSITOS DE AHORRO CON CERTIFICADO A TERMINO
+* 210900	CUENTAS DE AHORRO ESPECIAL
+* 211000	CERTIFICADOS DE AHORRO DE VALOR REAL
+
+
+
+
+
+```{r}
+
+LISTA_HOJAS=PROCES_lista_15_16_BANCOS # BORRAR
+#VECTOR_CUENTAS=c("100000","110000","110500") # BORRAR
+FECHA_INICIAL_SERIE="2015/1/1" #borrar
+FECHA_FINAL_SERIE="2016/12/1"#borrar
+VECTOR_CUENTAS_FRN_15_16=c("210000","210700","210815","210900","211000") 
+VECTOR_CUENTAS=VECTOR_CUENTAS_FRN_15_16
+
+CUENTAS_FRN_BANCOS_15_16=AGREGAR_T_SERIES_PUC(VECTOR_CUENTAS,
+                               LISTA_HOJAS,
+                               FECHA_INICIAL_SERIE,
+                               FECHA_FINAL_SERIE)
+
+
+SERIE_SALDOS_NO_CONTRACT_BANCOS_15_16=CUENTAS_FRN_BANCOS_15_16[,"210000"]-CUENTAS_FRN_BANCOS_15_16[,"210700"]-CUENTAS_FRN_BANCOS_15_16[,"210815"]-CUENTAS_FRN_BANCOS_15_16[,"210900"]-CUENTAS_FRN_BANCOS_15_16[,"211000"]
+
+FECHAS_15_16=seq(as.Date(FECHA_INICIAL_SERIE), as.Date(FECHA_FINAL_SERIE), "month")
+
+plot(FECHAS_15_16,SERIE_SALDOS_NO_CONTRACT_BANCOS_15_16,type = "l",main = "Saldos no Contractuales Bancos")
+
+
+```
+
+
+
+# Unir saldos 2001 - 2014 con saldos 2015-2016.
+
+
+
+```{r}
+
+VALOR_DEPOSITOS_VISTA=c(SERIE_SALDOS_NO_CONTRACT_BANCOS_01_14,SERIE_SALDOS_NO_CONTRACT_BANCOS_15_16)
+
+#Interpolar dato faltante
+VALOR_DEPOSITOS_VISTA["2008-06-01"]=mean(c(VALOR_DEPOSITOS_VISTA["2008-05-01"],VALOR_DEPOSITOS_VISTA["2008-07-01"]))
+
+
+FECHAS_01_16=c(FECHAS_01_14,FECHAS_15_16)
+plot(FECHAS_01_16, VALOR_DEPOSITOS_VISTA,type="l")
+
+write.csv(VALOR_DEPOSITOS_VISTA,file="Depositos_vista_bancos.csv")
+
+```
+
+
+
+
+# Flujos de las cuentas de depositos a la vista:
+
+```{r}
+
+#Cargar librerias necesarias
+library(stats)
+library(zoo)
+library(graphics)
+library(quadprog)
+library(tseries)
+
+
+#Cambios_bancos=diff(log(VALOR_DEPOSITOS_VISTA))
+
+Cambios_bancos=vector()
+for (i in 2:length(VALOR_DEPOSITOS_VISTA)){Cambios_bancos[i-1]=(VALOR_DEPOSITOS_VISTA[i]-VALOR_DEPOSITOS_VISTA[i-1])/VALOR_DEPOSITOS_VISTA[i-1]}
+
+
+
+
+plot(FECHAS_01_16[-1], Cambios_bancos,type="l")
+
+Cambios_bancos=cbind(lubridate::month(FECHAS_01_16)[-1],Cambios_bancos)
+colnames(Cambios_bancos)[1]="mes"
+
+
+meses=1:12
+valores_por_mes=list()
+medias_mensuales=vector()
+
+
+for(j in 1:12){
+valores_por_mes[[j]]=Cambios_bancos[Cambios_bancos[,"mes"]==j,]
+medias_mensuales[j]=mean(as.data.frame(valores_por_mes[j])[,2])
+}
+
+plot(medias_mensuales,type="bar")
+barplot(medias_mensuales)
+
+
+par(mfrow=c(3,2))
+
+for(j in 1:6){
+hist(as.data.frame(valores_por_mes[j])[,2],15)
+}
+
+par(mfrow=c(3,2))
+for(j in 7:12){
+hist(as.data.frame(valores_por_mes[j])[,2],15)
+}
+
+
+retiros_enero=(as.data.frame(valores_por_mes[1])[,2])
+ 
+FRECUENCIA_RETIROS=vector()
+
+
+for(j in 1:12){
+valores_mes=as.data.frame(valores_por_mes[j])[,2]
+FRECUENCIA_RETIROS[j]=table(cut(as.numeric(valores_mes), c(min(valores_mes),0)))/(length(valores_mes)) 
+}                               
+
+barplot(FRECUENCIA_RETIROS)
+
+
+VBLE=Cambios_bancos[,"Cambios_bancos"]
+FACTOR=as.factor(Cambios_bancos[,"mes"]) 
+ANOVA=aov(VBLE~FACTOR)
+
+summary(ANOVA)
+
+TukeyHSD(ANOVA)
+
+
+ library(agricolae)
+ 
+(duncan.test(ANOVA,"FACTOR"))
+ 
+pairwise.t.test(VBLE, FACTOR, p.adj = "none")
+
+```
+
+
+
+# Correlograma
+
+```{r}
+
+acf(Cambios_bancos[,"Cambios_bancos"])
+pacf(Cambios_bancos[,"Cambios_bancos"])
+
+
+```
+
+
+
+
+```{r}
+library(stats)
+library(zoo)
+library(graphics)
+library(quadprog)
+library(tseries)
+```
+
+

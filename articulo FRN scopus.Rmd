@@ -5,10 +5,27 @@ date: "18 de septiembre de 2017"
 output: html_document
 ---
 
+# Resumen. 
 
-Las oeraciones de intermediación financiera exponen a las entidades que las ejecutan  al Riesgo de Liquidez, el cual  se define como la contingencia de no poder cumplir de manera plena y oportuna con las obligaciones de pago en las fechas correspondientes debido a la insuficiencia de recursos líquidos o a la necesidad de asumir costos inusuales de fondeo.  
+* Planteamiento del problema.
+* Metodolog�a.
+* Resultados.
 
-La materialización del riesgo de liquidez genera requerimientos  de recursos líquidos, que pueden  cubrirse a través de la liquidación de sus activos. La liquidación de dichos activos de manera contingente, puede  generar perdidas al si se hace a precios inferiores de los esperados. Esta situación  puede generar contagio en el sistema finananciero, a través del efecto que dicha contingencia pueda tener sobre la liquidez del mercado y la percepción del público sobre la estabilidad y la viabilidad del sistema financiero.
+
+# Palabras claves: Riesgo de liquidez, Factor de Retiro Neto,.....
+
+
+# Introducci�n
+
+
+* Plantemamiento del problema.
+* Marco te�rico
+* Objetivos 
+* Partes del documento
+
+Las oeraciones de intermediaci�n financiera exponen a las entidades que las ejecutan  al Riesgo de Liquidez, el cual  se define como la contingencia de no poder cumplir de manera plena y oportuna con las obligaciones de pago en las fechas correspondientes debido a la insuficiencia de recursos l�?quidos o a la necesidad de asumir costos inusuales de fondeo.  
+
+La materializaci�n del riesgo de liquidez genera requerimientos  de recursos l�?quidos, que pueden  cubrirse a través de la liquidación de sus activos. La liquidación de dichos activos de manera contingente, puede  generar perdidas al si se hace a precios inferiores de los esperados. Esta situación  puede generar contagio en el sistema finananciero, a través del efecto que dicha contingencia pueda tener sobre la liquidez del mercado y la percepción del público sobre la estabilidad y la viabilidad del sistema financiero.
 
 
 Con el fin de evitar la materialización del riesgo de liquidez, se requiere un sistema de administración de dicho riesgo, que permita a los intermediarios financieros:  identificar, medir, controlar y monitorear este riesgo.
@@ -16,7 +33,7 @@ Con el fin de evitar la materialización del riesgo de liquidez, se requiere un 
 
 Un sistema de administración de riesgo de liquidez, debe de incorporar la proyección de los flujos de ingresos y egresos que tendran las entidades para un horizonte de tiempo dado.
 
-Según el anexo 1 del capítulo 6 de la circular basica contable y fincnaicera emitida por la Superintendencia Financiera de COlombia (SFC), el cual proporciona la metodología para la implelentación de un Sistema de Administración de Riesgo de Liquidez estándar, los flujos de ingresos y egresos de las entidades financieras  se pueden clasificar como flujos con vencimientos contractuales y no cntractuales. La diferencia fundamental de estos flujos, es que los los flujos con vencimientos contractuales se presentan en  fechas y montos  prestablecidos , mientras  que para  los flujos que presentan vencimientos no contractuales,  se desconocen las fechas y los montos.
+Según el anexo 1 del cap�?tulo 6 de la circular basica contable y fincnaicera emitida por la Superintendencia Financiera de COlombia (SFC), el cual proporciona la metodolog�?a para la implelentación de un Sistema de Administración de Riesgo de Liquidez estándar, los flujos de ingresos y egresos de las entidades financieras  se pueden clasificar como flujos con vencimientos contractuales y no cntractuales. La diferencia fundamental de estos flujos, es que los los flujos con vencimientos contractuales se presentan en  fechas y montos  prestablecidos , mientras  que para  los flujos que presentan vencimientos no contractuales,  se desconocen las fechas y los montos.
 
 
 
@@ -24,7 +41,36 @@ Para la proyección de los flujos con vencimietos no contractuales, la SFC propo
 
 
 
-En este trabajo  se propone una metodología basa en modelos de series de tiempo ARIMA y GARCH para hacer la estimación de los retiros netos de caja originados en posiciones de rubros que no tienen vencimientos prestablecidos en entidades financieras de Colombia para el periodo 2003-2016 a través de la modelación de la serie de tiempo de los retiros mensuales del sistema financiero Colombiano. 
+En este trabajo  se propone una metodolog�?a basa en modelos de series de tiempo ARIMA y GARCH para hacer la estimación de los retiros netos de caja originados en posiciones de rubros que no tienen vencimientos prestablecidos en entidades financieras de Colombia para el periodo 2003-2016 a través de la modelación de la serie de tiempo de los retiros mensuales del sistema financiero Colombiano. 
 
-La metodología propuesta se compara a través de preubas de hipotesis estadisticas  con la metodología propuesta por la SFC para la medición estándar del riesgo de liquidez
+La metodolog�?a propuesta se compara a través de preubas de hipotesis estadisticas  con la metodolog�?a propuesta por la SFC para la medición estándar del riesgo de liquidez
+
+
+
+
+# Descripci�n de los datos.
+
+
+
+# Metodolog�a.
+
+* Medici�n no par�metrica (empirica, cap�tulo VI circular basica contable)
+
+* Medici�n parametrica. 
+* estacionalidad
+* modelo ARMA para la media 
+* Modelo GARCH para la volatilidad.
+* Forma de la distribuci�n
+
+# Resultados 
+
+# An�lisis de resultados y conclusiones 
+
+# Bibliograf�a.
+
+# Anexos
+
+
+
+
 

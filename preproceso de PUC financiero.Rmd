@@ -97,13 +97,13 @@ Las hojas se obtienen de un libro de excel que en cada hoja tiene el PUC de un m
 ```{r cargar 15_16 CIAS}
 
 
-setwd("~/LIQUIDEZ_Y_RESISTENCIA_ITM/cia de financiamiento 3")
+setwd("~/EPR PERSONAL/cia de financiamiento 3")
 temp = list.files("~/EPR PERSONAL/cia de financiamiento 3",pattern="*.xls")
 
-RAW_lista_15_16_CCIAS <- list()
+RAW_lista_15_17_CCIAS <- list()
 
-for (x in 1:24) {
-  RAW_lista_15_16_CCIAS[[x]] <- read_excel(temp[x], sheet=1, col_names = FALSE, skip = 8)
+for (x in 1:length(temp)) {
+  RAW_lista_15_17_CCIAS[[x]] <- read_excel(temp[x], sheet=1, col_names = FALSE, skip = 8)
 }
 
 
@@ -167,24 +167,21 @@ return(NOMBRE_LISTA_PROCES)
 
 
 
-Se procesan diferentes listas y se almancenan en una lista de lista llamadas **ORACULO**
+Se procesan diferentes listas y se almancenan en una lista de lista llamadas **BD_ENTIDADES_FINANCIERAS_PROCESADA**
 
 
 ```{r}
 
-
-
 PROCES_lista_01_14_BANCOS=PROCESAR_BD(RAW_lista_01_14_BANCOS)
-
 
 PROCES_lista_15_16_BANCOS=PROCESAR_BD(RAW_lista_15_16_BANCOS)
 
 PROCES_lista_01_14_CCIAS=PROCESAR_BD(RAW_lista_01_14_CCIAS)
 
-PROCES_lista_15_16_CCIAS=PROCESAR_BD(RAW_lista_15_16_CCIAS)
+PROCES_lista_15_17_CCIAS=PROCESAR_BD(RAW_lista_15_17_CCIAS)
 
-ORACULO=list(PROCES_lista_01_14_BANCOS=PROCES_lista_01_14_BANCOS, PROCES_lista_15_16_BANCOS=PROCES_lista_15_16_BANCOS,PROCES_lista_01_14_CCIAS=PROCES_lista_01_14_CCIAS,PROCES_lista_15_16_CCIAS=PROCES_lista_15_16_CCIAS)
+BD_ENTIDADES_FINANCIERAS_PROCESADA=list(PROCES_lista_01_14_BANCOS=PROCES_lista_01_14_BANCOS, PROCES_lista_15_16_BANCOS=PROCES_lista_15_16_BANCOS,PROCES_lista_01_14_CCIAS=PROCES_lista_01_14_CCIAS,PROCES_lista_15_17_CCIAS=PROCES_lista_15_17_CCIAS)
 
-save(ORACULO,file = "BASE_DATOS_ENT_FINANCIERAS.RData")
+save(BD_ENTIDADES_FINANCIERAS_PROCESADA,file = "BASE_DATOS_ENT_FINANCIERAS.RData")
 ```
 
